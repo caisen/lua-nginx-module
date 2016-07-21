@@ -2458,7 +2458,7 @@ This directive runs Lua code to look up and load the SSL session (if any) accord
 provided by the current SSL handshake request for the downstream.
 
 The Lua API for obtaining the current session ID and loading a cached SSL session data
-is provided in the [ngx.ssl.session](https://github.com/openresty/lua-resty-core/blob/ssl-session/lib/ngx/ssl/session.lua)
+is provided in the [ngx.ssl.session](https://github.com/openresty/lua-resty-core/blob/ssl-session/lib/ngx/ssl/session.md)
 Lua module shipped with the [lua-resty-core](https://github.com/openresty/lua-resty-core#readme)
 library.
 
@@ -2524,7 +2524,7 @@ are *disabled* in this context. You can still, however, use the [ngx.timer.at](#
 to create 0-delay timers to save the SSL session data asynchronously to external services (like `redis` or `memcached`).
 
 The Lua API for obtaining the current session ID and the associated session state data
-is provided in the [ngx.ssl.session](https://github.com/openresty/lua-resty-core/blob/ssl-session/lib/ngx/ssl/session.lua)
+is provided in the [ngx.ssl.session](https://github.com/openresty/lua-resty-core/blob/ssl-session/lib/ngx/ssl/session.md#readme)
 Lua module shipped with the [lua-resty-core](https://github.com/openresty/lua-resty-core#readme)
 library.
 
