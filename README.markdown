@@ -2484,6 +2484,19 @@ SSL session resumption will happen and thus bypass the [ssl_certificate_by_lua*]
 hook completely. In this case, NGINX also bypasses the [ssl_session_store_by_lua_block](#ssl_session_store_by_lua)
 hook, for obvious reasons.
 
+If you are using pre-built packages for OpenResty 1.11.2.1 or later, then everything should work
+out of the box.
+
+If you are using OpenSSL libraries not provided by OpenResty, then you need to apply the following patch for
+OpenSSL 1.0.2h or later:
+
+<https://github.com/openresty/openresty/blob/master/patches/openssl-1.0.2h-sess_set_get_cb_yield.patch>
+
+If you are not using the NGINX core shipped with OpenResty 1.11.2.1, then you need to
+apply the following patch to the standard NGINX core 1.11.2 or later:
+
+<http://openresty.org/download/nginx-1.11.2-nonblocking_ssl_handshake_hooks.patch>
+
 This directive was first introduced in the `v0.10.6` release.
 
 [Back to TOC](#directives)
