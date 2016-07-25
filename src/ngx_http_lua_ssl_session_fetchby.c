@@ -3,48 +3,6 @@
  * Copyright (C) Yichun Zhang (agentzh)
  */
 
-/*
- * Note on implementing yield/resume model in OpenSSL lua callback
- *
- * From lua VM's perspective, intuitively, a lua script is executed in a
- * yield/resume model: the script being executed would yield its execution
- * when come across a blocking operation, VM takes a break and
- * resume the execution later when the operation is done. This would maximize
- * Nginx worker's efficiency so it can deal with other connection meanwhile.
- *
- * OpenSSL needs to support this execution model in its own state machine loop,
- * we should modify OpenSSL TLS handshake logic to properly retry callbacks
- * repeatedly until lua script returns.
- *
- * A "handler" (here it is ngx_http_lua_ssl_sess_fetch_handler) acts as the
- * actual callback function for OpenSSL. It would run a lua script through lua
- * VM. It needs to bridge the communication between OpenSSL and lua VM.
- * When VM yields, it needs to signal to OpenSSL to "retry later".
- * When VM finishes script execution (with or without error), the callback is
- * then responsible to return a correct result or does some sort of error
- * reporting. The communication model dictates that there is a
- * ngx_http_lua_ssl_ctx_t strucutre managed as OpenSSL exdata that lua VM
- * will write any return value to it and the
- * callback will read from the structure and pass on them to OpenSSL.
- *
- * We have more than one callbacks doing yield/resume, and we need
- * to make sure they all do their job without interfering each other.
- * So we decide to have a stronger requirement: each callback should run
- * its lua script exactly one because
- *   1. So far it is not necessary to run any callback script
- *      more than once under the same SSL context.
- *   2. If a callback is called again after it finishes, there is a bug in
- *      OpenSSL state loop.
- *
- * By enforcing the run-only-once rule, we can also avoid potential dangling
- * pointer in cctx. Here is why. Once a return-value pointer inside cctx
- * is returned, OpenSSL may immediately free the pointer if the object is deemed
- * invalid. So any return-value pointer inside cctx is not suitable for
- * return twice as it could lead to double-free. A concrete example is
- * cctx->session, which is used by ngx_http_lua_ssl_sess_fetch_handler
- * to return a session, deserialized from external storage by lua VM.
- *
- */
 
 #ifndef DDEBUG
 #define DDEBUG 0
