@@ -449,8 +449,10 @@ ngx_http_lua_ffi_ssl_get_serialized_session(ngx_http_request_t *r,
         return NGX_ERROR;
     }
 
-    /* In case the session is not valid, buf is not touched. */
-    i2d_SSL_SESSION(session, &buf);
+    if (i2d_SSL_SESSION(session, &buf) == 0) {
+        *err = "i2d_SSL_SESSION() failed";
+        return NGX_ERROR;
+    }
 
     return NGX_OK;
 }
@@ -461,6 +463,7 @@ int
 ngx_http_lua_ffi_ssl_get_serialized_session_size(ngx_http_request_t *r,
     char **err)
 {
+    int                              len;
     ngx_ssl_conn_t                  *ssl_conn;
     ngx_connection_t                *c;
     ngx_ssl_session_t               *session;
@@ -492,8 +495,13 @@ ngx_http_lua_ffi_ssl_get_serialized_session_size(ngx_http_request_t *r,
         return NGX_ERROR;
     }
 
-    /* In case the session is not valid, 0 will be returned. */
-    return i2d_SSL_SESSION(session, NULL);
+    len = i2d_SSL_SESSION(session, NULL);
+    if (len == 0) {
+        *err = "i2d_SSL_SESSION() failed";
+        return NGX_ERROR;
+    }
+
+    return len;
 }
 
 
